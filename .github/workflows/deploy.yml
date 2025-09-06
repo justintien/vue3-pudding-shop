@@ -1,0 +1,59 @@
+# .github/workflows/deploy.yml
+
+# 工作流程的名稱
+name: Deploy Vue3 App to Pages
+
+# 觸發條件：當推送到 'main' 分支時觸發
+on:
+  push:
+    branches: ['main']
+
+# 允許這個工作流程寫入 gh-pages 分支
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 工作流程執行的任務
+jobs:
+  # 部署任務
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      # 步驟 1: 拉取你的程式碼
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 步驟 2: 設定 Node.js 環境
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      # 步驟 3: 安裝依賴
+      - name: Install dependencies
+        run: npm install
+
+      # 步驟 4: 建構靜態網頁 (Vite 會根據 vite.config.js 的 base 設定來打包)
+      - name: Build
+        run: npm run build
+
+      # 步驟 5: 設定 GitHub Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # 步驟 6: 上傳建構好的靜態檔案
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # 上傳 `dist` 資料夾的內容
+          path: './dist'
+
+      # 步驟 7: 部署到 GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
