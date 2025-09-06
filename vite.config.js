@@ -7,7 +7,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/vue-3pudding-shop/',
+  base: '/vue3-pudding-shop/',
   plugins: [
     vue(),
     vueDevTools(),
